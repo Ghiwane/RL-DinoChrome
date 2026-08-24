@@ -55,7 +55,7 @@ class Dino:
 
     def get_hitbox(self):
         if self.current_state in (State.RUNNING, State.JUMPING, State.FAST_FALLING):
-            return (ct.DINO_X, self.dino_y, ct.DINO_X + 88, self.dino_y + 93)
+            return (ct.DINO_X, self.dino_y, 88, 93)
 
         elif self.current_state == State.DUCKING:
             standing_height = 90
@@ -63,7 +63,7 @@ class Dino:
             y_offset = standing_height - duck_height
 
             y0 = self.dino_y + y_offset
-            return (ct.DINO_X, y0, ct.DINO_X + 118, y0 + duck_height)
+            return (ct.DINO_X, y0, 118, duck_height)
 
 class Obstacle:
     def __init__(self, x, y, width, height, obstacle_type):
@@ -83,7 +83,7 @@ class Obstacle:
             return False
 
     def get_hitbox(self):
-        return (self.X, self.Y, self.X + self.width, self.Y + self.height)
+        return (self.X, self.Y, self.width, self.height)
 
 class Cactus(Obstacle):
     VARIANTS = [

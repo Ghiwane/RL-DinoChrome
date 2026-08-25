@@ -17,6 +17,7 @@ class Dino:
         self.dino_x = ct.DINO_X
         self.current_state = initial_state
         self.y_velocity = 0.0
+        self.is_ducking_pressed = False
 
     def jump(self):
         # Le saut n'est déclenché que depuis l'état de course
@@ -29,6 +30,8 @@ class Dino:
             self.current_state = State.RUNNING
 
     def duck(self, is_ducking: bool):
+        self.is_ducking_pressed = is_ducking
+
         if is_ducking:
             if self.current_state == State.RUNNING:
                 self.current_state = State.DUCKING
@@ -58,7 +61,10 @@ class Dino:
             if self.dino_y >= ct.DINO_Y:
                 self.dino_y = ct.DINO_Y
                 self.y_velocity = 0.0
-                self.current_state = State.RUNNING
+                if self.is_ducking_pressed:
+                    self.current_state = State.DUCKING
+                else:
+                    self.current_state = State.RUNNING
 
     def get_hitbox(self):
         # Hitbox standard pour les positions debout / en l'air

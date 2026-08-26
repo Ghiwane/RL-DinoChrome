@@ -81,6 +81,9 @@ class DinoGame:
             if self.score > 0 and int(self.score) % ct.SCORE_PER_SPEEDUP == 0:
                 self.speed = min(ct.MAX_SPEED, self.speed + ct.SPEED_INCREMENT * 0.01)
 
+        if self.score >= 99999:
+            self.done = True
+
         reward = self.reward_count()
 
         state = self.get_state()

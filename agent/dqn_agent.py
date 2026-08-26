@@ -84,18 +84,22 @@ class DinoAgent:
         # Décroît l'exploration rate jusqu'à eps_min
         self.eps = max(self.eps_min, self.eps * self.eps_decay)
 
-    def evaluate(self, env, n_episodes=10):
-        # Évalue les performances de l'agent sans exploration (pure exploitation)
+    def evaluate(self, env, n_episodes=10): # Évalue les performances de l'agent sans exploration (pure exploitation)
         total_rewards = []
+        total_steps = []
         for _ in range(n_episodes):
             state = env.reset()
             done = False
             episode_reward = 0
+            steps = 0
             while not done:
                 with torch.no_grad():
                     state_tensor = torch.FloatTensor(state)
                     action = self.q_network(state_tensor).argmax().item()
                 state, reward, done, info = env.step(action)
                 episode_reward += reward
+                steps += 1
             total_rewards.append(episode_reward)
+            total_steps.append(steps)
+        print(f"steps moyens: {np.mean(total_steps):.0f}, max: {max(total_steps)}")
         return np.mean(total_rewards)

@@ -86,19 +86,3 @@ class DinoGame:
         state = self.get_state()
 
         return state, reward, self.done, {"score" : self.score}
-
-import random
-
-env = DinoGame()
-scores = []
-
-for episode in range(50):
-    state = env.reset()
-    done = False
-    while not done:
-        action = random.choice([Action.NOTHING, Action.JUMP, Action.DUCK])
-        state, reward, done, info = env.step(action)
-    scores.append(info["score"])
-
-print(f"Score moyen (actions aléatoires) : {sum(scores)/len(scores):.1f}")
-print(f"Score min/max : {min(scores):.1f} / {max(scores):.1f}")

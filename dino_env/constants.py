@@ -9,7 +9,7 @@ SPEED_DROP_COEF = 2.0     # Multiplicateur de gravité lors d'une chute rapide (
 GROUND_Y = 260            # Ligne de sol de référence (en pixels depuis le haut)
 GROUND_VISUAL_OFFSET = 0  # Ajustement vertical pour le rendu du sol
 
-SCREEN_W = 900            # Largeur de la fenêtre Pygame
+SCREEN_W = 1200            # Largeur de la fenêtre Pygame
 SCREEN_H = 300            # Hauteur de la fenêtre Pygame
 FPS = 60                  # Nombre d'images par seconde
 

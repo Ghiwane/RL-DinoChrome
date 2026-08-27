@@ -5,19 +5,29 @@ import torch
 import sys
 import os
 
+# 1. Définition de la fonction de seed
+def set_seed(seed=42):
+    """Fixe la seed pour garantir la reproductibilité de l'entraînement."""
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+# 2. Application de la seed AVANT de charger tes propres modules
+set_seed(42)
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../agent')))
 from dqn_agent import DinoAgent
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../dino_env')))
 from env import DinoGame
 
-# Set random seeds so the results are repeatable
-SEED = 42
-random.seed(SEED)
-np.random.seed(SEED)
-torch.manual_seed(SEED)
-
-# Create the CartPole environment
+# Create the CartPole (Dino) environment
 env = DinoGame()
 
 # Reset the environment to get the first state
@@ -27,14 +37,14 @@ state = env.reset()
 agent = DinoAgent(5, 3)
 
 # Training settings
-episodes = 500
+episodes = 1000
 episode_rewards = []
 eval_episodes = []
 eval_rewards = []
 losses = []
 
 best_eval_reward = -float('inf')
-eval_freq = 50  # Evaluate every 100 episodes
+eval_freq = 50  # Evaluate every 50 episodes
 
 # Main training loop
 for i in range(episodes):
@@ -82,10 +92,8 @@ for i in range(episodes):
     # Print training progress every 20 episodes
     if i % 20 == 0:
         print(f'Episode : {i} | Reward : {total_rewards} | Current epsilon : {agent.eps}')
-
-    if i % 20 == 0:
-        print(f"Loss: {loss}")
-
+        if len(losses) > 0:
+            print(f"Loss: {losses[-1]}")
 
 os.makedirs("logs", exist_ok=True)
 np.save("logs/episode_rewards.npy", np.array(episode_rewards))

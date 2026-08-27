@@ -50,9 +50,8 @@ class ObstacleSpawner:
     def _pick_obstacle(self):
         """
         Sélectionne le type d'obstacle (Cactus ou Ptérodactyle).
-        Évite d'enchaîner deux ptérodactyles consécutifs pour préserver la jouabilité.
         """
-        if self.last_type == "ptero" or random.random() < 0.65:
+        if random.random() < 0.65:
             obstacle = Cactus.create_random()
             self.last_type = "cactus"
         else:

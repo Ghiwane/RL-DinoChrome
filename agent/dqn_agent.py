@@ -13,7 +13,7 @@ class DinoAgent:
 
         self.optimizer = torch.optim.Adam(self.q_network.parameters(), lr=0.0005) # optimizer pour mettre à jour les poids 
 
-        self.buffer = ReplayBuffer(capacity=30000) #replay buffer qui stock les steps passés  
+        self.buffer = ReplayBuffer(capacity=50000) #replay buffer qui stock les steps passés  
 
         self.gamma = 0.999
         self.eps = 1.0

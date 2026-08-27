@@ -37,7 +37,7 @@ state = env.reset()
 agent = DinoAgent(5, 3)
 
 # Training settings
-episodes = 2500
+episodes = 5000
 episode_rewards = []
 eval_episodes = []
 eval_rewards = []
@@ -50,6 +50,7 @@ eval_freq = 50  # Evaluate every 50 episodes
 for i in range(episodes):
     state = env.reset()
     total_rewards = 0
+    final_score = 0
     done = False
 
     # Play one full episode
@@ -71,6 +72,7 @@ for i in range(episodes):
         # Move to the next state
         state = next_state
         total_rewards += reward  
+        final_score = info['score']
 
     # Reduce exploration rate (epsilon) after each episode
     agent.decay_epsilon()
@@ -81,19 +83,19 @@ for i in range(episodes):
         eval_reward = agent.evaluate(env, n_episodes=10)
         eval_episodes.append(i)
         eval_rewards.append(eval_reward)
-        print(f'Episode eval {i} : {eval_reward:.1f}')
+        print(f'Episode eval {i} | reward : {eval_reward:.1f}')
         
         # Save the model if it achieves a new best score
         if eval_reward > best_eval_reward:
             best_eval_reward = eval_reward
             torch.save(agent.q_network.state_dict(), "trained_model.pth")
-            print(f'New best model saved ({eval_reward:.1f})')
+            print(f'New best model saved | reward : ({eval_reward:.1f})')
 
     # Print training progress every 20 episodes
     if i % 20 == 0:
-        print(f'Episode : {i} | Reward : {total_rewards} | Current epsilon : {agent.eps}')
+        print(f'Episode : {i} | Score du jeu : {final_score:.1f} | Reward : {total_rewards} | Current epsilon : {agent.eps}')
         if len(losses) > 0:
-            print(f"Loss: {losses[-1]}")
+            print(f"Loss: {losses[-1]:.4f}")
 
 os.makedirs("logs", exist_ok=True)
 np.save("logs/episode_rewards.npy", np.array(episode_rewards))

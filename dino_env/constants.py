@@ -1,8 +1,8 @@
 # --- MOTEUR PHYSIQUE & DEPLACEMENT ---
 GRAVITY = 1.1             # Accélération verticale appliquée au saut
 Y_VELOCITY = -18.0        # Impulsion initiale du saut (négative = vers le haut)
-SPEED = 12.0              # Vitesse initiale du défilement au sol
-MAX_SPEED = 25.0          # Vitesse maximale atteignable
+SPEED = 10.0              # Vitesse initiale du défilement au sol
+MAX_SPEED = 22.0          # Vitesse maximale atteignable
 SPEED_DROP_COEF = 2.0     # Multiplicateur de gravité lors d'une chute rapide (FAST_FALLING)
 
 # --- REPERES DU DECOR ET REFRESH ---
@@ -48,5 +48,5 @@ SCORE_PER_SPEEDUP = 100   # Nombre de points requis pour accélérer
 
 # --- DELAIS D'APPARITION DES OBSTACLES (SPAWNER) ---
 # Intervalle de réapparition (exprimé en nombre de frames)
-SPAWN_MIN_FRAMES = 45     # Temps d'attente minimal entre 2 obstacles
-SPAWN_MAX_FRAMES = 90     # Temps d'attente maximal entre 2 obstacles
+SPAWN_MIN_FRAMES = 35     # Temps d'attente minimal entre 2 obstacles
+SPAWN_MAX_FRAMES = 80     # Temps d'attente maximal entre 2 obstacles

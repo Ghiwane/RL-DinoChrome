@@ -11,7 +11,7 @@ from env import DinoGame
 from renderer import Renderer
 from dqn_agent import DinoAgent
 
-MAX_STEPS = 6000  
+MAX_STEPS = 300000  
 
 def main():
     pygame.init()
@@ -28,7 +28,7 @@ def main():
     state = env.reset()
     done = False
     steps = 0
-
+    
     running = True
     while running:
         clock.tick(ct.FPS)  # vitesse réelle de jeu, pour bien voir ce qui se passe
@@ -45,14 +45,14 @@ def main():
             state, reward, done, info = env.step(action)
             steps += 1
 
-            if steps % 100 == 0:
+            if steps % 1000 == 0:
                 print(f"step {steps} | score {info['score']:.1f} | action {action}")
 
         renderer.render(env.dino, env.obstacles, env.score, env.speed, done, debug=True)
 
         if done or steps >= MAX_STEPS:
             print(f"Fin : {steps} steps, score {env.score:.1f}, done={done}")
-            running = False  
+            running =  False
 
     pygame.quit()
     sys.exit()

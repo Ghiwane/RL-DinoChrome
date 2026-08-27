@@ -37,7 +37,7 @@ state = env.reset()
 agent = DinoAgent(5, 3)
 
 # Training settings
-episodes = 1000
+episodes = 2500
 episode_rewards = []
 eval_episodes = []
 eval_rewards = []

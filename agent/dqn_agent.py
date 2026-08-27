@@ -11,14 +11,14 @@ class DinoAgent:
         self.target_network = Qnetwork(state, action)  # target network qui evalue l'action choisit 
         self.target_network.load_state_dict(self.q_network.state_dict()) # on copie les differents poids du main network vers le target network
 
-        self.optimizer = torch.optim.Adam(self.q_network.parameters(), lr=0.001) # optimizer pour mettre à jour les poids 
+        self.optimizer = torch.optim.Adam(self.q_network.parameters(), lr=0.0005) # optimizer pour mettre à jour les poids 
 
         self.buffer = ReplayBuffer(capacity=30000) #replay buffer qui stock les steps passés  
 
         self.gamma = 0.999
         self.eps = 1.0
         self.eps_min = 0.001
-        self.eps_decay = 0.9999
+        self.eps_decay = 0.999
         self.batch_size = 64
         self.n_actions = action
         self.n_step = 0

@@ -13,7 +13,7 @@ class DinoAgent:
 
         self.optimizer = torch.optim.Adam(self.q_network.parameters(), lr=0.0005) # optimizer pour mettre à jour les poids 
 
-        self.buffer = ReplayBuffer(capacity=300000) #replay buffer qui stock les steps passés  
+        self.buffer = ReplayBuffer(capacity=500000) #replay buffer qui stock les steps passés  
 
         self.gamma = 0.999
         self.eps = 1.0
@@ -22,7 +22,7 @@ class DinoAgent:
         self.batch_size = 64
         self.n_actions = action
         self.n_step = 0
-        self.target_update_freq = 1000 
+        self.target_update_freq = 10000 
         self.train_nstep = 4   
 
     def choose_action(self, state):
@@ -69,9 +69,10 @@ class DinoAgent:
             if self.n_step % self.target_update_freq == 0:
                 self.update_target()
 
-            # Backpropagation 
+            # Backpropagation
             self.optimizer.zero_grad()
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.q_network.parameters(), max_norm=1.0)
             self.optimizer.step()
 
             return loss.item()

@@ -19,6 +19,7 @@ class DinoGame:
         self.score = 0.0
         self.speed = ct.SPEED
         self.done = False
+        self.truncated = False
         self.next_speedup_score = ct.SCORE_PER_SPEEDUP
 
         return self.get_state()
@@ -51,6 +52,8 @@ class DinoGame:
     def reward_count(self):
         if self.done:
             return -100
+        if self.truncated:
+            return 0
         return 1
 
     def step(self, action):
@@ -84,10 +87,10 @@ class DinoGame:
                 self.next_speedup_score += ct.SCORE_PER_SPEEDUP
 
         if self.score >= 99999:
-            self.done = True
+            self.truncated = True
 
         reward = self.reward_count()
 
         state = self.get_state()
 
-        return state, reward, self.done, {"score" : self.score}
+        return state, reward, self.done, self.truncated, {"score" : self.score}

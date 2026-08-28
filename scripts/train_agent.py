@@ -37,14 +37,16 @@ state = env.reset()
 agent = DinoAgent(5, 3)
 
 # Training settings
-episodes = 5000
+episodes = 4000
 episode_rewards = []
 eval_episodes = []
 eval_rewards = []
 losses = []
 
 best_eval_reward = -float('inf')
-eval_freq = 50  # Evaluate every 50 episodes
+eval_freq = 100  # Evaluate every 100 episodes
+
+print(f"Entraînement sur : {torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU'}")
 
 # Main training loop
 for i in range(episodes):
@@ -52,14 +54,15 @@ for i in range(episodes):
     total_rewards = 0
     final_score = 0
     done = False
+    truncated = False
 
     # Play one full episode
-    while not done:
+    while not (done or truncated):
         # Choose action (exploration vs exploitation)
         action = agent.choose_action(state)
         
         # Take action in the environment
-        next_state, reward, done, info = env.step(action)
+        next_state, reward, done, truncated, info = env.step(action)
         
         # Save experience in the replay buffer
         agent.buffer.push(state, action, reward, next_state, done)

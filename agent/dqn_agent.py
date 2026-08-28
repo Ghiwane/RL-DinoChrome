@@ -7,23 +7,26 @@ import torch.nn.functional as F
 
 class DinoAgent:
     def __init__(self, state, action):
-        self.q_network = Qnetwork(state, action)  # main network qui choisit l'action et apprend
-        self.target_network = Qnetwork(state, action)  # target network qui evalue l'action choisit 
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        self.q_network = Qnetwork(state, action).to(self.device)  # main network qui choisit l'action et apprend
+        self.target_network = Qnetwork(state, action).to(self.device)  # target network qui evalue l'action choisit 
         self.target_network.load_state_dict(self.q_network.state_dict()) # on copie les differents poids du main network vers le target network
 
-        self.optimizer = torch.optim.Adam(self.q_network.parameters(), lr=0.0005) # optimizer pour mettre à jour les poids 
+        self.optimizer = torch.optim.Adam(self.q_network.parameters(), lr=0.0001) # optimizer pour mettre à jour les poids 
 
         self.buffer = ReplayBuffer(capacity=500000) #replay buffer qui stock les steps passés  
 
-        self.gamma = 0.999
+        self.gamma = 0.99
         self.eps = 1.0
         self.eps_min = 0.001
         self.eps_decay = 0.999
-        self.batch_size = 64
+        self.batch_size = 128
         self.n_actions = action
         self.n_step = 0
-        self.target_update_freq = 10000 
+        self.target_update_freq = 10000
         self.train_nstep = 4   
+
 
     def choose_action(self, state):
     # Epsilon-greedy
@@ -32,7 +35,7 @@ class DinoAgent:
             return random.choice(range(self.n_actions))  # une action random
         else:
             with torch.no_grad():
-                state_tensor = torch.FloatTensor(state)
+                state_tensor = torch.FloatTensor(state).to(self.device)
                 return self.q_network(state_tensor).argmax().item() # meilleure action prédite
 
     def train_step(self):
@@ -46,6 +49,12 @@ class DinoAgent:
             
             # Sample un random mini-batch depuis le buffer
             states, actions, rewards, next_states, dones = self.buffer.sample(self.batch_size)
+
+            states = torch.FloatTensor(states).to(self.device)
+            actions = torch.LongTensor(actions).to(self.device)
+            rewards = torch.FloatTensor(rewards).to(self.device)
+            next_states = torch.FloatTensor(next_states).to(self.device)
+            dones = torch.FloatTensor(dones).to(self.device)
 
             # Prédit les Q-values pour les states actuels et conserve les actions choisies
             q_values = self.q_network(states)
@@ -91,13 +100,14 @@ class DinoAgent:
         for _ in range(n_episodes):
             state = env.reset()
             done = False
+            truncated = False
             episode_reward = 0
             steps = 0
-            while not done:
+            while not (done or truncated):
                 with torch.no_grad():
-                    state_tensor = torch.FloatTensor(state)
+                    state_tensor = torch.FloatTensor(state).to(self.device)
                     action = self.q_network(state_tensor).argmax().item()
-                state, reward, done, info = env.step(action)
+                state, reward, done, truncated, info = env.step(action)
                 episode_reward += reward
                 steps += 1
             total_rewards.append(episode_reward)

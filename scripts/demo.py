@@ -11,7 +11,8 @@ from env import DinoGame
 from renderer import Renderer
 from dqn_agent import DinoAgent
 
-MAX_STEPS = 300000  
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 def main():
     pygame.init()
@@ -23,10 +24,12 @@ def main():
     agent = DinoAgent(5, 3)
     agent.q_network.load_state_dict(torch.load("trained_model.pth"))
     agent.q_network.eval()
+    agent.q_network.to(device)
 
     env = DinoGame()
     state = env.reset()
     done = False
+    truncated = False
     steps = 0
     
     running = True
@@ -37,12 +40,12 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        if not done and steps < MAX_STEPS:
+        if not (done or truncated):
             with torch.no_grad():
-                state_tensor = torch.FloatTensor(state)
+                state_tensor = torch.FloatTensor(state).to(device)
                 action = agent.q_network(state_tensor).argmax().item()
 
-            state, reward, done, info = env.step(action)
+            state, reward, done, truncated, info = env.step(action)
             steps += 1
 
             if steps % 1000 == 0:
@@ -50,7 +53,7 @@ def main():
 
         renderer.render(env.dino, env.obstacles, env.score, env.speed, done, debug=True)
 
-        if done or steps >= MAX_STEPS:
+        if (done or truncated):
             print(f"Fin : {steps} steps, score {env.score:.1f}, done={done}")
             running =  False
 

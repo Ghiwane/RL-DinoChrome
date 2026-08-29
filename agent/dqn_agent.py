@@ -13,6 +13,8 @@ class DinoAgent:
         self.target_network = Qnetwork(state, action).to(self.device)  # target network qui evalue l'action choisit 
         self.target_network.load_state_dict(self.q_network.state_dict()) # on copie les differents poids du main network vers le target network
 
+        self.collect_network = Qnetwork(state, action).to(self.device) # un network pour collecter les etats à haute vitesse
+
         self.optimizer = torch.optim.Adam(self.q_network.parameters(), lr=0.0001) # optimizer pour mettre à jour les poids 
 
         self.buffer = ReplayBuffer(capacity=500000) #replay buffer qui stock les steps passés  
@@ -28,15 +30,20 @@ class DinoAgent:
         self.train_nstep = 4   
 
 
-    def choose_action(self, state):
-    # Epsilon-greedy
+    def choose_action(self, state, network=None):
+        # Epsilon-greedy
         rand_nb = np.random.rand()
         if rand_nb < self.eps:
             return random.choice(range(self.n_actions))  # une action random
         else:
             with torch.no_grad():
                 state_tensor = torch.FloatTensor(state).to(self.device)
-                return self.q_network(state_tensor).argmax().item() # meilleure action prédite
+                if network == None:
+                    return self.q_network(state_tensor).argmax().item() # meilleure action prédite
+                else:
+                    return self.collect_network(state_tensor).argmax().item()
+
+        
 
     def train_step(self):
         self.n_step += 1 
@@ -112,5 +119,5 @@ class DinoAgent:
                 steps += 1
             total_rewards.append(episode_reward)
             total_steps.append(steps)
-        print(f"steps moyens: {np.mean(total_steps):.0f}, max: {max(total_steps)}")
+        print(f"\nsteps moyens: {np.mean(total_steps):.0f}, max: {max(total_steps)}")
         return np.mean(total_rewards)
